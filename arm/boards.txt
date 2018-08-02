@@ -1,6 +1,6 @@
 ######################################################################################
 
-max32620_fthr.name=MAX32620FTHR
+max32620_fthr.name=MAX32620FTHR(Programming Port)
 
 max32620_fthr.upload.tool=daplink
 
@@ -30,7 +30,7 @@ max32620_fthr.bootloader.tool=daplink
 
 ######################################################################################
 
-max32620_fthr_bl.name=MAX32620FTHR(BootLoader)
+max32620_fthr_bl.name=MAX32620FTHR(Native USB Port)
 
 max32620_fthr_bl.upload.tool=daplink
 
