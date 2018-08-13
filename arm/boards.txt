@@ -1,6 +1,6 @@
 ######################################################################################
 
-max32620_fthr.name=MAX32620FTHR
+max32620_fthr.name=MAX32620FTHR(Programming Port)
 
 max32620_fthr.upload.tool=daplink
 
@@ -24,9 +24,13 @@ max32620_fthr.compiler.PeriphDriver.build.path="-I{build.system.path}/MAX32620Pe
 max32620_fthr.compiler.MAX_USB.include.path=
 max32620_fthr.compiler.MAX_USB.build.path=
 
+# To allow Burn Bootloader feature
+# Bootloader can be restores only when operating with MAXDAP programming adapter
+max32620_fthr.bootloader.tool=daplink
+
 ######################################################################################
 
-max32620_fthr_bl.name=MAX32620FTHR(BootLoader)
+max32620_fthr_bl.name=MAX32620FTHR(Native USB Port)
 
 max32620_fthr_bl.upload.tool=daplink
 
