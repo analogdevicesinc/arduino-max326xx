@@ -246,6 +246,12 @@ int UsbCdcAcm::event_callback(maxusb_event_t evt, void *data)
 }
 
 /* ************************************************************************** */
+UsbCdcAcm::operator bool()
+{
+    return !!acm_present();
+}
+
+/* ************************************************************************** */
 extern "C" void USB_IRQHandler(void) { usb_event_handler(); }
 
 /* ************************************************************************** */
