@@ -256,17 +256,15 @@ int I2CM_Write(mxc_i2cm_regs_t *i2cm, uint8_t addr, const uint8_t *cmd_data,
     int retval = E_NO_ERROR;
     mxc_i2cm_fifo_regs_t *fifo;
 
-    if (data == NULL) {
-        return E_NULL_PTR;
+    // Either data and len should be valid or both should be NULL/0
+    if ((data == NULL) ^ (len == 0)) {
+        // Return corresponding error if one of them is invalid
+        return (data == NULL) ? E_NULL_PTR : E_BAD_PARAM;
     }
 
     // Make sure the I2CM has been initialized
     if (i2cm->ctrl == 0) {
         return E_UNINITIALIZED;
-    }
-
-    if(!(len > 0)) {
-        return E_NO_ERROR;
     }
 
     // Lock this I2CM
