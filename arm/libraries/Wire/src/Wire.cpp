@@ -265,7 +265,7 @@ void TwoWire::beginTransmission(int addr)
 uint8_t TwoWire::endTransmission(uint8_t stop)
 {
     if (stop) {
-        return (I2CM_Write(i2cm, targetAddr, NULL, 0, txBuffer, txBufferLength) == txBufferLength) ? 0 : 4;
+        return (I2CM_Write(i2cm, targetAddr, NULL, 0, (txBufferLength) ? txBuffer : NULL, txBufferLength) == txBufferLength) ? 0 : 4;
     }
 
     i2cm->inten = 0;
