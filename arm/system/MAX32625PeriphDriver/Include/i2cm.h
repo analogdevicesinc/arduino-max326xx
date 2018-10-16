@@ -64,6 +64,11 @@ extern "C" {
 #define I2CM_FIFO_DEPTH_3Q      ((3 * MXC_I2CM_FIFO_DEPTH) / 4)
 #define I2CM_FIFO_DEPTH_2Q      (MXC_I2CM_FIFO_DEPTH / 2)
 
+// Arduino's requirement for errors
+// Extending mxc_error codes
+#define E_NACK_ON_ADDR_ARDUINO -18
+#define E_NACK_ON_DATA_ARDUINO -19
+
 extern const uint32_t clk_div_table[3][8];
 /**
  * Enumeration type to select supported I2CM frequencies.
@@ -73,6 +78,12 @@ typedef enum {
     I2CM_SPEED_100KHZ = 0,
     I2CM_SPEED_400KHZ
 } i2cm_speed_t;
+
+/**
+ * Current I2CM speed.
+ */
+extern i2cm_speed_t current_speed;
+
 
 /// @brief I2CM Transaction request.
 typedef struct i2cm_req i2cm_req_t;

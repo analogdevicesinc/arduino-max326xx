@@ -58,13 +58,14 @@ public:
     int availableForWrite(void);
     void flush(void){}
     size_t write(uint8_t n);
+    operator bool();
 
 private:
     static int configured;
     static int suspended;
     static int remote_wake_en;
     static int peeked;
-    
+
     static acm_cfg_t acm_cfg;
     static int setconfig_callback(usb_setup_pkt *sud, void *cbdata);
     static int setfeature_callback(usb_setup_pkt *sud, void *cbdata);

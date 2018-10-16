@@ -35,7 +35,7 @@
  * property whatsoever. Maxim Integrated Products, Inc. retains all
  * ownership rights.
  *
- * $Date: 2017-02-16 12:08:14 -0600 (Thu, 16 Feb 2017) $ 
+ * $Date: 2017-02-16 12:08:14 -0600 (Thu, 16 Feb 2017) $
  * $Revision: 26469 $
  *
  *************************************************************************** */
@@ -72,6 +72,11 @@ extern "C" {
 #define I2CM_FIFO_DEPTH_3Q      ((3 * MXC_I2CM_FIFO_DEPTH) / 4)
 #define I2CM_FIFO_DEPTH_2Q      (MXC_I2CM_FIFO_DEPTH / 2)
 
+// Arduino's requirement for errors
+// Extending mxc_error codes
+#define E_NACK_ON_ADDR_ARDUINO -18
+#define E_NACK_ON_DATA_ARDUINO -19
+
 extern const uint32_t clk_div_table[3][8];
 /**
  * Enumeration type to select supported I2CM frequencies.
@@ -82,21 +87,26 @@ typedef enum {
 } i2cm_speed_t;
 
 /**
+ * Current I2CM speed.
+ */
+extern i2cm_speed_t current_speed;
+
+/**
  * Structure type for an I2CM Transaction request.
  */
 typedef struct i2cm_req i2cm_req_t;
 
 /**
- * @addtogroup i2cm_async 
+ * @addtogroup i2cm_async
  * @{
  * Function type for the I2C Master callback. The function declaration for the
  * I2CM callback is:
  * @code
  * void callback(i2cm_req_t * req, int error_code);
- * @endcode 
+ * @endcode
  * |        |                                            |
- * | -----: | :----------------------------------------- | 
- * | @p req |  Pointer to an #i2cm_req object representing the I2CM active transaction. | 
+ * | -----: | :----------------------------------------- |
+ * | @p req |  Pointer to an #i2cm_req object representing the I2CM active transaction. |
  * | @p error_code | An error code if the active transaction had a failure or #E_NO_ERROR if successful. |
  *
  */
@@ -112,10 +122,10 @@ typedef void (*i2cm_callback_fn)(i2cm_req_t * req, int  error_code);
 struct i2cm_req {
     uint8_t addr;               /**< 7-Bit unshifted address of the slave for communication.                                                */
     const uint8_t *cmd_data;    /**< Pointer to a command data buffer to send to the slave before either a read or write transaction.       */
-    uint32_t cmd_len;           /**< Number of bytes in command.                                                                            */    
-    uint8_t *data;              /**< Data to write or read.                                                                                 */    
+    uint32_t cmd_len;           /**< Number of bytes in command.                                                                            */
+    uint8_t *data;              /**< Data to write or read.                                                                                 */
     uint32_t data_len;          /**< Length of data.                                                                                        */
-    uint32_t cmd_num;           /**< Number of command bytes sent.                                                                          */    
+    uint32_t cmd_num;           /**< Number of command bytes sent.                                                                          */
     uint32_t data_num;          /**< Number of data bytes sent.                                                                             */
     i2cm_callback_fn callback;  /**< Function pointer to a callback function.                                                               */
 };
@@ -165,11 +175,11 @@ int I2CM_Init(mxc_i2cm_regs_t *i2cm, const sys_cfg_i2cm_t *sys_cfg, i2cm_speed_t
 
 /**
  * @brief   Shutdown I2CM module.
- * 
+ *
  * @param   i2cm    Pointer to the I2CM registers, see #mxc_i2cm_regs_t.
- * 
+ *
  * @returns #E_NO_ERROR if everything is successful, error if unsuccessful.
- * 
+ *
  */
 int I2CM_Shutdown(mxc_i2cm_regs_t *i2cm);
 
@@ -227,7 +237,7 @@ int I2CM_Write(mxc_i2cm_regs_t *i2cm, uint8_t addr, const uint8_t *cmd_data,
 
 /**
  * @defgroup i2cm_async I2CM Asynchrous Functions
- * @{ 
+ * @{
  */
 
 /**
@@ -353,7 +363,7 @@ __STATIC_INLINE void I2CM_ClearFlags(mxc_i2cm_regs_t *i2cm, uint32_t mask)
  * @param      i2cm  Pointer to the I2CM register structure, see
  *                   #mxc_i2cm_regs_t.
  *
- * @return     The currently set interrupt flags, @see I2CM_INTFL_Register 
+ * @return     The currently set interrupt flags, @see I2CM_INTFL_Register
  *             for the interrupt flag masks.
  */
 __STATIC_INLINE unsigned I2CM_GetFlags(mxc_i2cm_regs_t *i2cm)
