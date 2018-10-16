@@ -17,9 +17,9 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
   Modified 2012 by Todd Krein (todd@krein.org) to implement repeated starts
-  
+
   Modified 2017 by Maxim Integrated for MAX326xx
-  
+
 */
 
 #ifndef TwoWire_h
@@ -34,6 +34,14 @@
 
 // WIRE_HAS_END means Wire has end()
 #define WIRE_HAS_END 1
+
+enum TransmitStatus {
+    TX_SUCCESS = 0,
+    DATA_TOO_LONG,
+    NACK_TX_ADDR,
+    NACK_TX_DATA,
+    OTHER_ERROR
+};
 
 class TwoWire : public Stream
 {
@@ -53,6 +61,8 @@ class TwoWire : public Stream
     uint32_t idx;
     mxc_i2cm_regs_t *i2cm;
     mxc_i2cm_fifo_regs_t *fifo;
+
+    uint8_t map_to_arduino_err(int);
 
   public:
     TwoWire(uint32_t);

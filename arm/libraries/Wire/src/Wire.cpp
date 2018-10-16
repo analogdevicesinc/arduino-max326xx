@@ -96,24 +96,28 @@ void TwoWire::end(void)
 
 void TwoWire::setClock(uint32_t clock)
 {
-    i2cm_speed_t speed;
-
-    if (clock == 400000) {
-        speed = I2CM_SPEED_400KHZ;
-    } else {
-        speed = I2CM_SPEED_100KHZ;
-    }
+    // Default speed
+    i2cm_speed_t speed = I2CM_SPEED_400KHZ;
 
     // Compute clock array index
     int clki = ((SYS_I2CM_GetFreq(i2cm) / 12000000) - 1);
 
-    // Get clock divider settings from lookup table
-    if ((speed == I2CM_SPEED_100KHZ) && (clk_div_table[I2CM_SPEED_100KHZ][clki] > 0)) {
-        i2cm->fs_clk_div = clk_div_table[I2CM_SPEED_100KHZ][clki];
-
-    } else if ((speed == I2CM_SPEED_400KHZ) && (clk_div_table[I2CM_SPEED_400KHZ][clki] > 0)) {
-        i2cm->fs_clk_div = clk_div_table[I2CM_SPEED_400KHZ][clki];
+    if (clock == 400000) {
+        speed = I2CM_SPEED_400KHZ;
+        // Get clock divider settings from lookup table
+        if (clk_div_table[I2CM_SPEED_400KHZ][clki] > 0) {
+            i2cm->fs_clk_div = clk_div_table[I2CM_SPEED_400KHZ][clki];
+        }
+    } else if (clock == 100000) {
+        speed = I2CM_SPEED_100KHZ;
+        if (clk_div_table[I2CM_SPEED_100KHZ][clki] > 0) {
+            i2cm->fs_clk_div = clk_div_table[I2CM_SPEED_100KHZ][clki];
+        }
     }
+
+    // Update current_speed if clock is valid, or set to default speed
+    current_speed = speed;
+
 }
 
 uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint8_t sendStop)
@@ -264,18 +268,28 @@ void TwoWire::beginTransmission(int addr)
 
 uint8_t TwoWire::endTransmission(uint8_t stop)
 {
-    if (stop) {
-        return (I2CM_Write(i2cm, targetAddr, NULL, 0, (txBufferLength) ? txBuffer : NULL, txBufferLength) == txBufferLength) ? 0 : 4;
+    int error;
+
+    // Check if data is too long to fit in transmit buffer
+    if (getWriteError()) {
+        return DATA_TOO_LONG;
     }
 
+    // Disable interrupts and clear interrupt flag from previous transaction
     i2cm->inten = 0;
     i2cm->intfl = i2cm->intfl;
 
-    if (I2CM_Tx(i2cm, fifo, targetAddr, txBuffer, txBufferLength, 0) == E_NO_ERROR) {
-        return 0;
+    if (stop) {
+        error = I2CM_Write(i2cm, targetAddr, NULL, 0, (txBufferLength) ? txBuffer : NULL, txBufferLength);
+
+        // Keep error unchanged if it is not equal to txBufferLength
+        error = (error == txBufferLength) ? E_NO_ERROR : error;
+
+        return map_to_arduino_err(error);
     }
 
-    return 4;   // Return "Other Error" in case of error
+    error = I2CM_Tx(i2cm, fifo, targetAddr, txBuffer, txBufferLength, 0);
+    return map_to_arduino_err(error);
 }
 
 uint8_t TwoWire::endTransmission(void)
@@ -333,6 +347,20 @@ int TwoWire::peek(void)
 void TwoWire::flush(void)
 {
     endTransmission(true);
+}
+
+inline uint8_t TwoWire::map_to_arduino_err(int err)
+{
+    switch (err) {
+        case E_NO_ERROR:
+            return TX_SUCCESS; break;
+        case E_NACK_ON_ADDR_ARDUINO:
+            return NACK_TX_ADDR; break;
+        case E_NACK_ON_DATA_ARDUINO:
+            return NACK_TX_DATA; break;
+        default:
+            return OTHER_ERROR; break;
+    }
 }
 
 TwoWire Wire0 = TwoWire(0);

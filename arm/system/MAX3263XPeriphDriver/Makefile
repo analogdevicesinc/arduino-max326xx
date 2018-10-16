@@ -40,8 +40,11 @@ COMPILER=GCC
 
 BUILD_DIR=./Build
 
-# This is the path to the CMSIS root directory
 CMSIS_ROOT=../CMSIS
+
+ARDUINO_CORE = ../../cores/arduino
+
+VARIANT_PATH = ../../variants/max3263x_fthr
 
 # Source files for this test (add path to VPATH below)
 SRCS += adc.c
@@ -75,10 +78,11 @@ SRCS += wdt2.c
 
 # Where to find source files for this project
 VPATH = Source
-VPATH += ../
 
 # Where to find header files for this project
 IPATH = Include
+IPATH += $(ARDUINO_CORE)
+IPATH += $(VARIANT_PATH)
 
 # Include the rules for building for this target
 TARGET_UC:=$(shell echo $(TARGET) | tr a-z A-Z)

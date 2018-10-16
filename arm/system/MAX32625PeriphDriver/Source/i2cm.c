@@ -46,11 +46,15 @@
 #include "mxc_errors.h"
 #include "mxc_sys.h"
 #include "i2cm.h"
+#include "stdbool.h"
+#include "wiring.h"
 
 /* **** Definitions **** */
 
 /* **** Globals **** */
 i2cm_req_state_t i2cm_states[MXC_CFG_I2CM_INSTANCES];
+bool sending_data = false;
+i2cm_speed_t current_speed;
 
 /* Clock divider lookup table */
 const uint32_t clk_div_table[3][8] = {
@@ -127,6 +131,8 @@ int I2CM_Init(mxc_i2cm_regs_t *i2cm, const sys_cfg_i2cm_t *sys_cfg, i2cm_speed_t
     // Compute clock array index
     clki = ((SYS_I2CM_GetFreq(i2cm) / 12000000) - 1);
 
+    current_speed = speed;
+
     // Get clock divider settings from lookup table
     if ((speed == I2CM_SPEED_100KHZ) && (clk_div_table[I2CM_SPEED_100KHZ][clki] > 0)) {
         i2cm->fs_clk_div = clk_div_table[I2CM_SPEED_100KHZ][clki];
@@ -198,13 +204,13 @@ int I2CM_Read(mxc_i2cm_regs_t *i2cm, uint8_t addr, const uint8_t *cmd_data,
         return E_UNINITIALIZED;
     }
 
-    if(!(len > 0)) {
+    if (!(len > 0)) {
         return E_NO_ERROR;
     }
 
     // Lock this I2CM
     i2cm_num = MXC_I2CM_GET_IDX(i2cm);
-    while(mxc_get_lock((uint32_t*)&i2cm_states[i2cm_num].req,1) != E_NO_ERROR) {}
+    while (mxc_get_lock((uint32_t*)&i2cm_states[i2cm_num].req,1) != E_NO_ERROR) {}
 
     // Get the FIFO pointer for this I2CM
     fifo = MXC_I2CM_GET_FIFO(i2cm_num);
@@ -214,7 +220,7 @@ int I2CM_Read(mxc_i2cm_regs_t *i2cm, uint8_t addr, const uint8_t *cmd_data,
     i2cm->intfl = i2cm->intfl;
 
     // Transmit the command if there is command data and length
-    if((cmd_data != NULL) && (cmd_len > 0)) {
+    if ((cmd_data != NULL) && (cmd_len > 0)) {
         retval = I2CM_Tx(i2cm, fifo, addr, cmd_data, cmd_len, 0);
     }
 
@@ -224,7 +230,7 @@ int I2CM_Read(mxc_i2cm_regs_t *i2cm, uint8_t addr, const uint8_t *cmd_data,
     }
 
     // Wait for the transaction to complete
-    if((error = I2CM_TxInProgress(i2cm)) != E_NO_ERROR) {
+    if ((error = I2CM_TxInProgress(i2cm)) != E_NO_ERROR) {
         retval = error;
     }
 
@@ -260,7 +266,7 @@ int I2CM_Write(mxc_i2cm_regs_t *i2cm, uint8_t addr, const uint8_t *cmd_data,
 
     // Lock this I2CM
     i2cm_num = MXC_I2CM_GET_IDX(i2cm);
-    while(mxc_get_lock((uint32_t*)&i2cm_states[i2cm_num].req,1) != E_NO_ERROR) {}
+    while (mxc_get_lock((uint32_t*)&i2cm_states[i2cm_num].req,1) != E_NO_ERROR) {}
 
     // Get the FIFO pointer for this I2CM
     fifo = MXC_I2CM_GET_FIFO(i2cm_num);
@@ -270,7 +276,7 @@ int I2CM_Write(mxc_i2cm_regs_t *i2cm, uint8_t addr, const uint8_t *cmd_data,
     i2cm->intfl = i2cm->intfl;
 
     // Transmit the command if there is command data and length, don't send stop bit
-    if((cmd_data != NULL) && (cmd_len > 0)) {
+    if ((cmd_data != NULL) && (cmd_len > 0)) {
         retval = I2CM_Tx(i2cm, fifo, addr, cmd_data, cmd_len, 0);
     }
 
@@ -280,7 +286,7 @@ int I2CM_Write(mxc_i2cm_regs_t *i2cm, uint8_t addr, const uint8_t *cmd_data,
     }
 
     // Wait for the transaction to complete
-    if((error = I2CM_TxInProgress(i2cm)) != E_NO_ERROR) {
+    if ((error = I2CM_TxInProgress(i2cm)) != E_NO_ERROR) {
         retval = error;
     }
 
@@ -308,7 +314,7 @@ int I2CM_ReadAsync(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req)
         return E_UNINITIALIZED;
     }
 
-    if(!(req->data_len > 0)) {
+    if (!(req->data_len > 0)) {
         return E_NO_ERROR;
     }
 
@@ -330,7 +336,7 @@ int I2CM_ReadAsync(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req)
     i2cm->intfl = i2cm->intfl;
 
     // Start the read
-    if((error = I2CM_ReadHandler(i2cm, req, i2cm_num)) != E_NO_ERROR) {
+    if ((error = I2CM_ReadHandler(i2cm, req, i2cm_num)) != E_NO_ERROR) {
         I2CM_Recover(i2cm);
         I2CM_FreeCallback(i2cm_num, error);
         return error;
@@ -353,7 +359,7 @@ int I2CM_WriteAsync(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req)
         return E_UNINITIALIZED;
     }
 
-    if(!(req->data_len > 0)) {
+    if (!(req->data_len > 0)) {
         return E_NO_ERROR;
     }
 
@@ -375,7 +381,7 @@ int I2CM_WriteAsync(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req)
     i2cm->intfl = i2cm->intfl;
 
     // Start the Write
-    if((error = I2CM_WriteHandler(i2cm, req, i2cm_num)) != E_NO_ERROR) {
+    if ((error = I2CM_WriteHandler(i2cm, req, i2cm_num)) != E_NO_ERROR) {
         I2CM_Recover(i2cm);
         I2CM_FreeCallback(i2cm_num, error);
         return error;
@@ -436,14 +442,14 @@ void I2CM_Handler(mxc_i2cm_regs_t *i2cm)
 
     // Read or write
     if (i2cm_states[i2cm_num].state == I2CM_STATE_READING) {
-        if((error = I2CM_ReadHandler(i2cm, i2cm_states[i2cm_num].req, i2cm_num)) != E_NO_ERROR) {
+        if ((error = I2CM_ReadHandler(i2cm, i2cm_states[i2cm_num].req, i2cm_num)) != E_NO_ERROR) {
             I2CM_Recover(i2cm);
             I2CM_FreeCallback(i2cm_num, error);
             return;
         }
 
     } else if (i2cm_states[i2cm_num].state == I2CM_STATE_WRITING) {
-        if((error = I2CM_WriteHandler(i2cm, i2cm_states[i2cm_num].req, i2cm_num)) != E_NO_ERROR) {
+        if ((error = I2CM_WriteHandler(i2cm, i2cm_states[i2cm_num].req, i2cm_num)) != E_NO_ERROR) {
             I2CM_Recover(i2cm);
             I2CM_FreeCallback(i2cm_num, error);
             return;
@@ -462,7 +468,7 @@ void I2CM_Handler(mxc_i2cm_regs_t *i2cm)
 int I2CM_Busy(mxc_i2cm_regs_t *i2cm)
 {
     // Check to see if there are any ongoing transactions
-    if((i2cm_states[MXC_I2CM_GET_IDX(i2cm)].req == NULL) &&
+    if ((i2cm_states[MXC_I2CM_GET_IDX(i2cm)].req == NULL) &&
         !(i2cm->trans & MXC_F_I2CM_TRANS_TX_IN_PROGRESS)) {
 
         return E_NO_ERROR;
@@ -487,12 +493,12 @@ int I2CM_PrepForSleep(mxc_i2cm_regs_t *i2cm)
 int I2CM_BusCheck(mxc_i2cm_regs_t *i2cm)
 {
     // If SCL is low, we don't have the bus
-    if(!(i2cm->bb & MXC_F_I2CM_BB_BB_SCL_IN_VAL)) {
+    if (!(i2cm->bb & MXC_F_I2CM_BB_BB_SCL_IN_VAL)) {
         return E_BUSY;
     }
 
     // If SDA is low, we don't have the bus
-    if(!(i2cm->bb & MXC_F_I2CM_BB_BB_SDA_IN_VAL)) {
+    if (!(i2cm->bb & MXC_F_I2CM_BB_BB_SDA_IN_VAL)) {
         return E_BUSY;
     }
 
@@ -533,13 +539,11 @@ int I2CM_WriteTxFifo(mxc_i2cm_regs_t *i2cm, mxc_i2cm_fifo_regs_t *fifo, const ui
     do {
 
         // Wait for the TX FIFO to have room and check for errors
-        if (i2cm->intfl & (MXC_F_I2CM_INTFL_TX_NACKED |
-            MXC_F_I2CM_INTFL_TX_LOST_ARBITR)) {
-
-            return E_COMM_ERR;
+        if (i2cm->intfl & (MXC_F_I2CM_INTFL_TX_NACKED | MXC_F_I2CM_INTFL_TX_LOST_ARBITR)) {
+            return (sending_data) ? E_NACK_ON_DATA_ARDUINO : E_NACK_ON_ADDR_ARDUINO;
         }
 
-        if((i2cm->intfl & MXC_F_I2CM_INTFL_TX_TIMEOUT) || !timeout--) {
+        if ((i2cm->intfl & MXC_F_I2CM_INTFL_TX_TIMEOUT) || !timeout--) {
             return E_TIME_OUT;
         }
 
@@ -561,10 +565,10 @@ int I2CM_TxInProgress(mxc_i2cm_regs_t *i2cm)
         MXC_F_I2CM_INTFL_TX_LOST_ARBITR)) {
 
         I2CM_Recover(i2cm);
-        return E_COMM_ERR;
+        return (sending_data) ? E_NACK_ON_DATA_ARDUINO : E_NACK_ON_ADDR_ARDUINO;
     }
 
-    if((i2cm->intfl & MXC_F_I2CM_INTFL_TX_TIMEOUT) && !timeout--) {
+    if ((i2cm->intfl & MXC_F_I2CM_INTFL_TX_TIMEOUT) && !timeout--) {
         I2CM_Recover(i2cm);
         return E_TIME_OUT;
     }
@@ -579,8 +583,14 @@ int I2CM_Tx(mxc_i2cm_regs_t *i2cm, mxc_i2cm_fifo_regs_t *fifo, uint8_t addr,
     uint32_t i;
     int error;
 
+    sending_data = false;
+
+    // Address 4 through 7 are reserved for High Speed I2C
+    // High speed address increases clock rate and causes false ACK
+    if ((addr > 3) && (addr < 8)) return E_NACK_ON_ADDR_ARDUINO;
+
     // Write the address to the TXFIFO
-    if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_START | (addr << 1)))) != E_NO_ERROR) {
+    if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_START | (addr << 1)))) != E_NO_ERROR) {
         return error;
     }
 
@@ -589,11 +599,17 @@ int I2CM_Tx(mxc_i2cm_regs_t *i2cm, mxc_i2cm_fifo_regs_t *fifo, uint8_t addr,
         i2cm->trans |= MXC_F_I2CM_TRANS_TX_START;
     }
 
+    // Allow time for address to be actually sent out on hardware
+    // This helps to determine if NACK was for Address or Data
+    if (current_speed == I2CM_SPEED_400KHZ) delayMicroseconds(30);
+    else if (current_speed == I2CM_SPEED_100KHZ) delayMicroseconds(120);
+
     // Fill the FIFO
     for (i = 0; i < len; i++) {
-        if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_TXDATA_ACK | data[i]))) != E_NO_ERROR) {
+        if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_TXDATA_ACK | data[i]))) != E_NO_ERROR) {
             return error;
         }
+        sending_data = true;
     }
 
     // Send the stop condition
@@ -616,15 +632,15 @@ int I2CM_Rx(mxc_i2cm_regs_t *i2cm, mxc_i2cm_fifo_regs_t *fifo, uint8_t addr,
     int error;
 
     // Write the address to the TXFIFO
-    if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_START |
+    if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_START |
         (addr << 1) | I2CM_READ_BIT))) != E_NO_ERROR) {
 
         return error;
     }
 
     // Write to the TXFIFO the number of bytes we want to read
-    while(i > 256) {
-        if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_COUNT | 255))) != E_NO_ERROR) {
+    while (i > 256) {
+        if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_COUNT | 255))) != E_NO_ERROR) {
             return error;
         }
 
@@ -632,7 +648,7 @@ int I2CM_Rx(mxc_i2cm_regs_t *i2cm, mxc_i2cm_fifo_regs_t *fifo, uint8_t addr,
     }
 
     if (i > 1) {
-        if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_COUNT | (i-2)))) != E_NO_ERROR) {
+        if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_COUNT | (i-2)))) != E_NO_ERROR) {
             return error;
         }
     }
@@ -644,7 +660,7 @@ int I2CM_Rx(mxc_i2cm_regs_t *i2cm, mxc_i2cm_fifo_regs_t *fifo, uint8_t addr,
 
 
     // NACK the last read byte
-    if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_NACK))) != E_NO_ERROR) {
+    if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_NACK))) != E_NO_ERROR) {
         return error;
     }
 
@@ -666,7 +682,7 @@ int I2CM_Rx(mxc_i2cm_regs_t *i2cm, mxc_i2cm_fifo_regs_t *fifo, uint8_t addr,
                 return E_TIME_OUT;
             }
 
-            if (!(i2cm->trans & MXC_F_I2CM_TRANS_TX_IN_PROGRESS)) {
+            if (i2cm->trans & (MXC_F_I2CM_TRANS_TX_LOST_ARBITR | MXC_F_I2CM_TRANS_TX_NACKED)) {
                 return E_COMM_ERR;
             }
         }
@@ -692,7 +708,7 @@ int I2CM_CmdHandler(mxc_i2cm_regs_t *i2cm, mxc_i2cm_fifo_regs_t *fifo, i2cm_req_
     if (req->cmd_num == 0) {
 
         // Write the address to the TXFIFO
-        if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_START | (req->addr << 1)))) != E_NO_ERROR) {
+        if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_START | (req->addr << 1)))) != E_NO_ERROR) {
             return error;
         }
 
@@ -703,7 +719,7 @@ int I2CM_CmdHandler(mxc_i2cm_regs_t *i2cm, mxc_i2cm_fifo_regs_t *fifo, i2cm_req_
     }
 
     // Write to the FIFO until it is full or we run out of command bytes
-    while((req->cmd_num < req->cmd_len) && (!fifo->tx)) {
+    while ((req->cmd_num < req->cmd_len) && (!fifo->tx)) {
         fifo->tx = MXC_S_I2CM_TRANS_TAG_TXDATA_ACK | req->cmd_data[req->cmd_num++];
     }
 
@@ -725,8 +741,8 @@ int I2CM_ReadHandler(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req, int i2cm_num)
     data_remain = req->data_len - req->data_num;
 
     // Process the command portion
-    if((cmd_remain) && (req->cmd_data != NULL)) {
-        if((error = I2CM_CmdHandler(i2cm, fifo, req)) != E_NO_ERROR) {
+    if ((cmd_remain) && (req->cmd_data != NULL)) {
+        if ((error = I2CM_CmdHandler(i2cm, fifo, req)) != E_NO_ERROR) {
             return error;
         }
 
@@ -734,11 +750,11 @@ int I2CM_ReadHandler(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req, int i2cm_num)
     }
 
     // Process the data portion
-    if((cmd_remain == 0) && (data_remain)) {
+    if ((cmd_remain == 0) && (data_remain)) {
 
         // Save the data from the RXFIFO
         data = fifo->rx;
-        while((req->data_num < req->data_len) && !(data & MXC_S_I2CM_RSTLS_TAG_EMPTY)) {
+        while ((req->data_num < req->data_len) && !(data & MXC_S_I2CM_RSTLS_TAG_EMPTY)) {
             req->data[req->data_num++] = data;
             data = fifo->rx;
         }
@@ -749,15 +765,15 @@ int I2CM_ReadHandler(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req, int i2cm_num)
             temp_len = req->data_len;
 
             // Write the address to the TXFIFO
-            if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_START |
+            if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_START |
                 (req->addr << 1) | I2CM_READ_BIT))) != E_NO_ERROR) {
 
                 return error;
             }
 
             // Write to the TXFIFO the number of bytes we want to read
-            while(temp_len > 256) {
-                if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_COUNT | 255))) != E_NO_ERROR) {
+            while (temp_len > 256) {
+                if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_COUNT | 255))) != E_NO_ERROR) {
                     return error;
                 }
 
@@ -765,7 +781,7 @@ int I2CM_ReadHandler(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req, int i2cm_num)
             }
 
             if (temp_len > 1) {
-                if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_COUNT | (temp_len-2)))) != E_NO_ERROR) {
+                if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_COUNT | (temp_len-2)))) != E_NO_ERROR) {
                     return error;
                 }
             }
@@ -776,7 +792,7 @@ int I2CM_ReadHandler(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req, int i2cm_num)
             }
 
             // NACK the last read byte
-            if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_NACK))) != E_NO_ERROR) {
+            if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_RXDATA_NACK))) != E_NO_ERROR) {
                 return error;
             }
 
@@ -825,8 +841,8 @@ int I2CM_WriteHandler(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req, int i2cm_num)
     data_remain = req->data_len - req->data_num;
 
     // Process the command portion
-    if((cmd_remain) && (req->cmd_data != NULL)) {
-        if((error = I2CM_CmdHandler(i2cm, fifo, req)) != E_NO_ERROR) {
+    if ((cmd_remain) && (req->cmd_data != NULL)) {
+        if ((error = I2CM_CmdHandler(i2cm, fifo, req)) != E_NO_ERROR) {
             return error;
         }
 
@@ -834,13 +850,13 @@ int I2CM_WriteHandler(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req, int i2cm_num)
     }
 
     // Process the data portion
-    if((cmd_remain == 0) && (data_remain)) {
+    if ((cmd_remain == 0) && (data_remain)) {
 
         // Start of the data portion
         if (req->data_num == 0) {
 
             // Write the address to the TXFIFO
-            if((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_START |
+            if ((error = I2CM_WriteTxFifo(i2cm, fifo, (MXC_S_I2CM_TRANS_TAG_START |
                 (req->addr << 1)))) != E_NO_ERROR) {
 
                 return error;
@@ -853,7 +869,7 @@ int I2CM_WriteHandler(mxc_i2cm_regs_t *i2cm, i2cm_req_t *req, int i2cm_num)
         }
 
         // Write bytes to the FIFO until it's full or we run out of bytes
-        while(req->data_num < req->data_len) {
+        while (req->data_num < req->data_len) {
             fifo->tx = MXC_S_I2CM_TRANS_TAG_TXDATA_ACK | req->data[req->data_num++];
         }
 
