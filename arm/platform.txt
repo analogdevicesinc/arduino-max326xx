@@ -106,6 +106,16 @@ tools.daplink.path={runtime.tools.daplink.path}
 tools.daplink.cmd=daplink
 tools.daplink.cmd.windows=daplink.bat
 
+# Upload
+tools.daplink.upload.params.verbose=-v
+tools.daplink.upload.params.verbose.windows=-v
+
+tools.daplink.upload.params.quiet=
+tools.daplink.upload.params.quiet.windows=
+
+tools.daplink.upload.pattern="{path}/{cmd}" "{build.path}" "{build.project_name}.bin" {upload.verbose}
+tools.daplink.upload.pattern.windows="{path}\{cmd}" "{build.path}" "{build.project_name}.bin" {upload.verbose}
+
 # Program
 tools.daplink.program.params.verbose=-v
 tools.daplink.program.params.verbose.windows=-v

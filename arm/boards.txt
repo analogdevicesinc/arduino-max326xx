@@ -2,7 +2,7 @@
 
 max32620_fthr.name=MAX32620FTHR(Programming Port)
 
-max32620_fthr.upload.tool=daplink
+max32620_fthr.upload.tool=maxdap_programmer
 
 max32620_fthr.build.mcu=cortex-m4
 max32620_fthr.build.f_cpu=96000000L
@@ -26,13 +26,15 @@ max32620_fthr.compiler.MAX_USB.build.path=
 
 # To allow Burn Bootloader feature
 # Bootloader can be restores only when operating with MAXDAP programming adapter
-max32620_fthr.bootloader.tool=daplink
+max32620_fthr.bootloader.tool=maxdap_programmer
 
 ######################################################################################
 
 max32620_fthr_bl.name=MAX32620FTHR(Native USB Port)
 
 max32620_fthr_bl.upload.tool=daplink
+# upload.protocol is not required for Daplink tools but, it is required for Upload feature to work
+max32620_fthr_bl.upload.protocol=none
 
 max32620_fthr_bl.build.mcu=cortex-m4
 max32620_fthr_bl.build.f_cpu=96000000L
@@ -58,7 +60,7 @@ max32620_fthr_bl.compiler.MAX_USB.build.path="-I{build.system.path}/MAX_USB/Buil
 
 max32625_mbed.name=MAX32625MBED
 
-max32625_mbed.upload.tool=daplink
+max32625_mbed.upload.tool=maxdap_programmer
 
 max32625_mbed.build.mcu=cortex-m4
 max32625_mbed.build.f_cpu=96000000L
@@ -84,7 +86,7 @@ max32625_mbed.compiler.MAX_USB.build.path=
 
 max32630_fthr.name=MAX32630FTHR
 
-max32630_fthr.upload.tool=daplink
+max32630_fthr.upload.tool=maxdap_programmer
 
 max32630_fthr.build.mcu=cortex-m4
 max32630_fthr.build.f_cpu=96000000L
