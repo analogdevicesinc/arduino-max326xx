@@ -96,53 +96,42 @@ recipe.output.save_file={build.project_name}.{build.variant}.bin
 recipe.size.pattern="{compiler.path}{compiler.size.cmd}" -A "{build.path}/{build.project_name}.elf"
 recipe.size.regex=\.text\s+([0-9]+).*
 
-# Uploader/Programmer Tools
-# -------------------------
 
-#------------- DAPLink -------------
+# DAPLink Uploader/Programmer Tools
+# ---------------------------------
 
 tools.daplink.path={runtime.tools.daplink.path}
-
 tools.daplink.cmd=daplink
 tools.daplink.cmd.windows=daplink.bat
 
-# Upload
+# ---------------------- Upload ----------------------
 tools.daplink.upload.params.verbose=-v
 tools.daplink.upload.params.verbose.windows=-v
-
 tools.daplink.upload.params.quiet=
 tools.daplink.upload.params.quiet.windows=
-
 tools.daplink.upload.mountPoint=BOOTLOADER
-
 tools.daplink.upload.pattern="{path}/{cmd}" "{build.path}" "{build.project_name}.bin" {upload.mountPoint} {upload.verbose}
 tools.daplink.upload.pattern.windows="{path}\{cmd}" "{build.path}" "{build.project_name}.bin" {upload.mountPoint} {upload.verbose}
 
-# Program
+# ---------------------- Program ---------------------
 tools.daplink.program.params.verbose=-v
 tools.daplink.program.params.verbose.windows=-v
-
 tools.daplink.program.params.quiet=
 tools.daplink.program.params.quiet.windows=
-
 tools.daplink.program.mountPoint=DAPLINK
-
 tools.daplink.program.pattern="{path}/{cmd}" "{build.path}" "{build.project_name}.bin" {program.mountPoint} {program.verbose}
 tools.daplink.program.pattern.windows="{path}\{cmd}" "{build.path}" "{build.project_name}.bin" {program.mountPoint} {program.verbose}
 
-# Burn Bootloader
+# ------------------ Burn Bootloader ------------------
 tools.daplink.bootloader.params.verbose=-v
 tools.daplink.bootloader.params.verbose.windows=-v
-
 tools.daplink.bootloader.params.quiet=
 tools.daplink.bootloader.params.quiet.windows=
-
 tools.daplink.bootloader.mountPoint=DAPLINK
-
 tools.daplink.bootloader.pattern="{path}/{cmd}" "{path}/bootloader" "{build.variant}_bl.bin" {bootloader.mountPoint} {bootloader.verbose}
 tools.daplink.bootloader.pattern.windows="{path}\{cmd}" "{path}\bootloader" "{build.variant}_bl.bin" {bootloader.mountPoint} {bootloader.verbose}
 
-# Erase
+# ----------------------- Erase -----------------------
 tools.daplink.erase.params.verbose=
 tools.daplink.erase.params.quiet=
 tools.daplink.erase.pattern=""
