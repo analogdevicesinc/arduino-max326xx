@@ -95,6 +95,10 @@
 #define AIN_1  50
 #define AIN_2  51
 #define AIN_3  52
+#define PIN_A0 AIN_0
+#define PIN_A1 AIN_1
+#define PIN_A2 AIN_2
+#define PIN_A3 AIN_3
 static const uint8_t A0 = AIN_0;
 static const uint8_t A1 = AIN_1;
 static const uint8_t A2 = AIN_2;
@@ -125,7 +129,7 @@ static const uint8_t MOSI0 = PIN_SPI0_MOSI;
 static const uint8_t MISO0 = PIN_SPI0_MISO;
 static const uint8_t SCK0  = PIN_SPI0_SCK;
 
-// SPI1: XIP Flash (Optional, board is produced without an XIP flash chip, so you need to buy&solder one)
+// SPI1: Option to add XIP Flash on the board
 #define PIN_SPI1_MISO   10
 #define PIN_SPI1_MOSI   9
 #define PIN_SPI1_SCK    8
@@ -155,7 +159,7 @@ static const uint8_t SCK2  = PIN_SPI2_SCK;
 static const uint8_t SDA = PIN_WIRE_SDA;
 static const uint8_t SCL = PIN_WIRE_SCL;
 
-// Wire0 (??)
+// Wire0: Not connected (I2CM0)
 #define PIN_WIRE0_SDA   14
 #define PIN_WIRE0_SCL   15
 static const uint8_t SDA0 = PIN_WIRE0_SDA;
@@ -167,7 +171,7 @@ static const uint8_t SCL0 = PIN_WIRE0_SCL;
 static const uint8_t SDA1 = PIN_WIRE1_SDA;
 static const uint8_t SCL1 = PIN_WIRE1_SCL;
 
-// Wire2: Feather pins (I2CM2)
+// Wire2: Feather pins, BMI160, MAX14690 (I2CM2)
 #define PIN_WIRE2_SDA   47
 #define PIN_WIRE2_SCL   48
 static const uint8_t SDA2 = PIN_WIRE2_SDA;
