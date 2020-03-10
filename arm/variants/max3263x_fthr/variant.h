@@ -83,8 +83,7 @@
 // Push button
 // ----
 #define SW1 P2_3
-#define SW2 NOT_CONNECTED
-#define SW3 NOT_CONNECTED
+
 // Standardized button names
 #define BUTTON1 SW1
 
