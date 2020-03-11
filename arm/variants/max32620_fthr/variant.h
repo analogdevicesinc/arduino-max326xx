@@ -64,6 +64,7 @@
 #define SERIAL_PORT_HARDWARE_OPEN2  Serial3
 
 #define PIN_NC      -1
+#define NOT_CONNECTED PIN_NC
 #define PIN_ANALOG  -2
 #define NUM_OF_PINS 53
 
@@ -79,16 +80,28 @@
 #define PIN_LED     RED_LED
 #define LED_BUILTIN RED_LED
 
+// Push button
+// ----
+#define SW1 P2_7
+
+// Standardized button names
+#define BUTTON1 SW1
+
+
 // Analog pins
 // -----------
-#define PIN_A0  49
-#define PIN_A1  50
-#define PIN_A2  51
-#define PIN_A3  52
-static const uint8_t A0 = PIN_A0;
-static const uint8_t A1 = PIN_A1;
-static const uint8_t A2 = PIN_A2;
-static const uint8_t A3 = PIN_A3;
+#define AIN_0  49
+#define AIN_1  50
+#define AIN_2  51
+#define AIN_3  52
+#define PIN_A0 AIN_0
+#define PIN_A1 AIN_1
+#define PIN_A2 AIN_2
+#define PIN_A3 AIN_3
+static const uint8_t A0 = AIN_0;
+static const uint8_t A1 = AIN_1;
+static const uint8_t A2 = AIN_2;
+static const uint8_t A3 = AIN_3;
 #define ADC_RESOLUTION 10
 
 // SPI Interfaces
@@ -162,6 +175,10 @@ static const uint8_t SCL1 = PIN_WIRE1_SCL;
 #define PIN_WIRE2_SCL   48
 static const uint8_t SDA2 = PIN_WIRE2_SDA;
 static const uint8_t SCL2 = PIN_WIRE2_SCL;
+
+// 1-Wire Master
+// ------
+#define OWM P4_0
 
 // Macros
 // ------
