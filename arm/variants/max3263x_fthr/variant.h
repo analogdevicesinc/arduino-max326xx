@@ -64,6 +64,7 @@
 #define SERIAL_PORT_HARDWARE_OPEN2  Serial3
 
 #define PIN_NC      -1
+#define NOT_CONNECTED PIN_NC
 #define PIN_ANALOG  -2
 #define NUM_OF_PINS 53
 
@@ -79,16 +80,28 @@
 #define PIN_LED     RED_LED
 #define LED_BUILTIN RED_LED
 
+// Push button
+// ----
+#define SW1 P2_3
+
+// Standardized button names
+#define BUTTON1 SW1
+
+
 // Analog pins
 // -----------
-#define PIN_A0  49
-#define PIN_A1  50
-#define PIN_A2  51
-#define PIN_A3  52
-static const uint8_t A0 = PIN_A0;
-static const uint8_t A1 = PIN_A1;
-static const uint8_t A2 = PIN_A2;
-static const uint8_t A3 = PIN_A3;
+#define AIN_0  49
+#define AIN_1  50
+#define AIN_2  51
+#define AIN_3  52
+#define PIN_A0 AIN_0
+#define PIN_A1 AIN_1
+#define PIN_A2 AIN_2
+#define PIN_A3 AIN_3
+static const uint8_t A0 = AIN_0;
+static const uint8_t A1 = AIN_1;
+static const uint8_t A2 = AIN_2;
+static const uint8_t A3 = AIN_3;
 #define ADC_RESOLUTION 10
 
 // SPI Interfaces
@@ -105,7 +118,7 @@ static const uint8_t MOSI = PIN_SPI_MOSI;
 static const uint8_t MISO = PIN_SPI_MISO;
 static const uint8_t SCK  = PIN_SPI_SCK;
 
-// SPI0
+// SPI0: On-board microSD card slot
 #define PIN_SPI0_MISO   6
 #define PIN_SPI0_MOSI   5
 #define PIN_SPI0_SCK    4
@@ -115,7 +128,7 @@ static const uint8_t MOSI0 = PIN_SPI0_MOSI;
 static const uint8_t MISO0 = PIN_SPI0_MISO;
 static const uint8_t SCK0  = PIN_SPI0_SCK;
 
-// SPI1
+// SPI1: Option to add XIP Flash on the board
 #define PIN_SPI1_MISO   10
 #define PIN_SPI1_MOSI   9
 #define PIN_SPI1_SCK    8
@@ -145,23 +158,37 @@ static const uint8_t SCK2  = PIN_SPI2_SCK;
 static const uint8_t SDA = PIN_WIRE_SDA;
 static const uint8_t SCL = PIN_WIRE_SCL;
 
-// Wire0
+// Wire0: Not connected (I2CM0)
 #define PIN_WIRE0_SDA   14
 #define PIN_WIRE0_SCL   15
 static const uint8_t SDA0 = PIN_WIRE0_SDA;
 static const uint8_t SCL0 = PIN_WIRE0_SCL;
 
-// Wire1: Feather pins
+// Wire1: Feather pins (I2CM1)
 #define PIN_WIRE1_SDA   28
 #define PIN_WIRE1_SCL   29
 static const uint8_t SDA1 = PIN_WIRE1_SDA;
 static const uint8_t SCL1 = PIN_WIRE1_SCL;
 
-// Wire2: Feather pins
+// Wire2: Feather pins, BMI160, MAX14690 (I2CM2)
 #define PIN_WIRE2_SDA   47
 #define PIN_WIRE2_SCL   48
 static const uint8_t SDA2 = PIN_WIRE2_SDA;
 static const uint8_t SCL2 = PIN_WIRE2_SCL;
+
+// 1-Wire Master
+// ------
+#define OWM P4_0
+
+// MAX14690N hardwired
+// ------
+#define PMIC_INT P3_7
+#define MPC P2_7
+#define MON AIN_0
+
+// microSD hardwired
+// ------
+#define DETECT P2_2
 
 // Macros
 // ------

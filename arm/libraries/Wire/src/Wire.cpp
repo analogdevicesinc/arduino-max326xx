@@ -99,6 +99,7 @@ void TwoWire::setClock(uint32_t clock)
     // Default speed
     i2cm_speed_t speed = I2CM_SPEED_400KHZ;
 
+
     // Compute clock array index
     int clki = ((SYS_I2CM_GetFreq(i2cm) / 12000000) - 1);
 
