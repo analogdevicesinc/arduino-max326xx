@@ -17,7 +17,7 @@ some minor differences in the [implementation of the Arduino APIs](../../wiki/AP
 1. [Download](https://www.arduino.cc/en/Main/Software) latest version and install the Arduino IDE for [Windows](https://www.arduino.cc/en/Guide/Windows), [Linux](https://www.arduino.cc/en/Guide/Linux) or [Mac OS](https://www.arduino.cc/en/Guide/MacOSX).
 2. Open the Arduino IDE.
 3. For Windows, and Linux, go to **_File->Preferences_**. For Mac OS, go to **_Arduino->Preferences_**.
-4. In the Dialog box, locate **_Additional Boards Manager URLs_** field, paste the following URL and click **_OK_**.<br/>`https://raw.githubusercontent.com/maximintegratedmicros/arduino-collateral/master/package_maxim_index.json`
+4. In the Dialog box, locate **_Additional Boards Manager URLs_** field, paste the following URL and click **_OK_**.<br/>`https://raw.githubusercontent.com/analogdevicesinc/arduino-max326xx/master/package_maxim_index.json`
 5. Go to **_Tools->Board->Boards Manager..._**
 6. In the search field, type "maxim".
 7. Select **_Maxim's 32-bit Microcontroller_** and click **_Install_**.

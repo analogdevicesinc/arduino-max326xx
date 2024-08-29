@@ -1,0 +1,134 @@
+{
+    "packages": [
+        {
+            "name": "Maxim",
+            "maintainer": "Analog Devices",
+            "websiteURL": "https://github.com/analogdevicesinc/arduino-max326xx",
+            "help": {
+                "online": "https://github.com/analogdevicesinc/arduino-max326xx/wiki"
+            },
+            "platforms": [
+                {
+                    "name": "Maxim's 32-bit Microcontroller",
+                    "architecture": "arm",
+                    "version": "1.1.5",
+                    "category": "Contributed",
+                    "url": "https://github.com/analogdevicesinc/arduino-max326xx/releases/download/v1.1.5/MAXIM_ARDUINO_v1.1.5.zip",
+                    "archiveFileName": "MAXIM_ARDUINO_v1.1.5.zip",
+                    "checksum": "SHA-256:fbbf1d85a317ccb9fb6e951bcd4af0e1cd9afa240093bfb91ecb8ecdfe5c8b71",
+                    "size": 1273804,
+                    "help": {
+                        "online": "https://www.maximintegrated.com/"
+                    },
+                    "boards": [
+                        {
+                            "name": "MAX32620FTHR"
+                        },
+                        {
+                            "name": "MAX32625MBED"
+                        },
+                        {
+                            "name": "MAX32630FTHR"
+                        }
+                    ],
+                    "toolsDependencies": [
+                        {
+                            "packager": "arduino",
+                            "name": "arm-none-eabi-gcc",
+                            "version": "4.8.3-2014q1"
+                        },
+                        {
+                            "packager": "Maxim",
+                            "name": "daplink",
+                            "version": "1.0.2"
+                        }
+                    ]
+                }
+            ],
+            "tools": [
+                {
+                    "name": "arm-none-eabi-gcc",
+                    "version": "4.8.3-2014q1",
+                    "systems": [
+                        {
+                            "host": "arm-linux-gnueabihf",
+                            "url": "http://downloads.arduino.cc/gcc-arm-none-eabi-4.8.3-2014q1-arm.tar.bz2",
+                            "archiveFileName": "gcc-arm-none-eabi-4.8.3-2014q1-arm.tar.bz2",
+                            "checksum": "SHA-256:ebe96b34c4f434667cab0187b881ed585e7c7eb990fe6b69be3c81ec7e11e845",
+                            "size": "44423906"
+                        },
+                        {
+                            "host": "i686-mingw32",
+                            "archiveFileName": "gcc-arm-none-eabi-4.8.3-2014q1-windows.tar.gz",
+                            "url": "http://downloads.arduino.cc/gcc-arm-none-eabi-4.8.3-2014q1-windows.tar.gz",
+                            "checksum": "SHA-256:fd8c111c861144f932728e00abd3f7d1107e186eb9cd6083a54c7236ea78b7c2",
+                            "size": "84537449"
+                        },
+                        {
+                            "host": "x86_64-apple-darwin",
+                            "url": "http://downloads.arduino.cc/gcc-arm-none-eabi-4.8.3-2014q1-mac.tar.gz",
+                            "archiveFileName": "gcc-arm-none-eabi-4.8.3-2014q1-mac.tar.gz",
+                            "checksum": "SHA-256:3598acf21600f17a8e4a4e8e193dc422b894dc09384759b270b2ece5facb59c2",
+                            "size": "52518522"
+                        },
+                        {
+                            "host": "x86_64-pc-linux-gnu",
+                            "url": "http://downloads.arduino.cc/gcc-arm-none-eabi-4.8.3-2014q1-linux64.tar.gz",
+                            "archiveFileName": "gcc-arm-none-eabi-4.8.3-2014q1-linux64.tar.gz",
+                            "checksum": "SHA-256:d23f6626148396d6ec42a5b4d928955a703e0757829195fa71a939e5b86eecf6",
+                            "size": "47595093"
+                        },
+                        {
+                            "host": "i686-pc-linux-gnu",
+                            "url": "http://downloads.arduino.cc/gcc-arm-none-eabi-4.8.3-2014q1-linux32.tar.gz",
+                            "archiveFileName": "gcc-arm-none-eabi-4.8.3-2014q1-linux32.tar.gz",
+                            "checksum": "SHA-256:ba1994235f69c526c564f65343f22ddbc9822b2ea8c5ee07dd79d89f6ace2498",
+                            "size": "51029223"
+                        }
+                    ]
+                },
+                {
+                    "name": "daplink",
+                    "version": "1.0.2",
+                    "systems": [
+                        {
+                            "host": "arm-linux-gnueabihf",
+                            "url": "https://github.com/analogdevicesinc/arduino-max326xx/releases/download/v1.1.5/daplink_v1.0.2.tar.gz",
+                            "archiveFileName": "daplink_v1.0.2.tar.gz",
+                            "checksum": "SHA-256:1595ea738cbd9bf3a04c89e31dde8c3fa1b8bb4db2d7e590da6e580c2cdcec6b",
+                            "size": 25763
+                        },
+                        {
+                            "host": "i686-mingw32",
+                            "url": "https://github.com/analogdevicesinc/arduino-max326xx/releases/download/v1.1.5/daplink_v1.0.2.tar.gz",
+                            "archiveFileName": "daplink_v1.0.2.tar.gz",
+                            "checksum": "SHA-256:1595ea738cbd9bf3a04c89e31dde8c3fa1b8bb4db2d7e590da6e580c2cdcec6b",
+                            "size": 25763
+                        },
+                        {
+                            "host": "x86_64-apple-darwin",
+                            "url": "https://github.com/analogdevicesinc/arduino-max326xx/releases/download/v1.1.5/daplink_v1.0.2.tar.gz",
+                            "archiveFileName": "daplink_v1.0.2.tar.gz",
+                            "checksum": "SHA-256:1595ea738cbd9bf3a04c89e31dde8c3fa1b8bb4db2d7e590da6e580c2cdcec6b",
+                            "size": 25763
+                        },
+                        {
+                            "host": "x86_64-pc-linux-gnu",
+                            "url": "https://github.com/analogdevicesinc/arduino-max326xx/releases/download/v1.1.5/daplink_v1.0.2.tar.gz",
+                            "archiveFileName": "daplink_v1.0.2.tar.gz",
+                            "checksum": "SHA-256:1595ea738cbd9bf3a04c89e31dde8c3fa1b8bb4db2d7e590da6e580c2cdcec6b",
+                            "size": 25763
+                        },
+                        {
+                            "host": "i686-pc-linux-gnu",
+                            "url": "https://github.com/analogdevicesinc/arduino-max326xx/releases/download/v1.1.5/daplink_v1.0.2.tar.gz",
+                            "archiveFileName": "daplink_v1.0.2.tar.gz",
+                            "checksum": "SHA-256:1595ea738cbd9bf3a04c89e31dde8c3fa1b8bb4db2d7e590da6e580c2cdcec6b",
+                            "size": 25763
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
