@@ -117,7 +117,7 @@ void TwoWire::setClock(uint32_t clock)
     }
 
     // Update current_speed if clock is valid, or set to default speed
-    current_speed = speed;
+    //current_speed = speed;
 
 }
 
